@@ -1,0 +1,128 @@
+#!/bin/bash
+set -eu
+
+[ -f ${PWD}/mk-emmc-image.sh ] || {
+	echo "Error: please run at the script's home dir"
+	exit 1
+}
+
+# Automatically re-run script under sudo if not root
+if [ $(id -u) -ne 0 ]; then
+        echo "Re-running script under sudo..."
+        sudo "$0" "$@"
+        exit
+fi
+
+TOP=$PWD
+true ${MKFS:="${TOP}/tools/make_ext4fs"}
+true ${MKFS:="${TOP}/tools/make_ext4fs"}
+
+true ${SOC:=h5}
+ARCH=arm
+KCFG=sunxi_arm64_defconfig
+KIMG=arch/${ARCH}/boot/Image
+KDTB=arch/${ARCH}/boot/dts/sun50i-h5-nanopi*.dtb
+KALL="Image dtbs"
+CROSS_COMPILER=aarch64-linux-gnu-
+# ${OUT} ${KERNEL_SRC} ${TOPPATH}/${TARGET_OS} ${TOPPATH}/prebuilt
+if [ $# -ne 4 ]; then
+        echo "bug: missing arg, $0 needs four args"
+        exit
+fi
+OUT=$1
+KERNEL_BUILD_DIR=$2
+TARGET_OS=$3
+PREBUILT=$4
+KMODULES_OUTDIR="${OUT}/output_${SOC}_kmodules"
+
+# copy kernel to boot.img
+if [ -f ${TARGET_OS}/boot.img ]; then
+    echo "copying kernel to boot.img ..."
+    mkdir -p ${OUT}/boot_mnt
+    mount -o loop ${TARGET_OS}/boot.img ${OUT}/boot_mnt
+    RET=$?
+
+    rsync -a --no-o --no-g ${KERNEL_BUILD_DIR}/${KIMG} ${OUT}/boot_mnt/
+    rsync -a --no-o --no-g ${KERNEL_BUILD_DIR}/${KDTB} ${OUT}/boot_mnt/
+
+    # cp ${KERNEL_BUILD_DIR}/${KIMG} ${OUT}/boot_mnt/
+    # cp -avf ${KERNEL_BUILD_DIR}/${KDTB} ${OUT}/boot_mnt/
+
+    rm -rf ${OUT}/boot
+    cp -af ${OUT}/boot_mnt ${OUT}/boot
+
+    umount ${OUT}/boot_mnt
+    rm -rf ${OUT}/boot_mnt
+
+    if [ ${RET} -ne 0 ]; then
+        echo "failed to update kernel to boot.img."
+        exit 1
+    fi
+else 
+	echo "not found ${TARGET_OS}/boot.img"
+	exit 1
+fi
+
+# copy kernel modules to rootfs.img
+if [ -f ${TARGET_OS}/rootfs.img ]; then
+    echo "copying kernel module and firmware to rootfs ..."
+
+    # Extract rootfs from img
+    simg2img ${TARGET_OS}/rootfs.img ${TARGET_OS}/r.img
+    mkdir -p ${OUT}/rootfs_mnt
+    mkdir -p ${OUT}/rootfs_new
+    mount -t ext4 -o loop ${TARGET_OS}/r.img ${OUT}/rootfs_mnt
+    if [ $? -ne 0 ]; then
+        echo "failed to mount ${TARGET_OS}/r.img."
+        exit 1
+    fi
+    cp -af ${OUT}/rootfs_mnt/* ${OUT}/rootfs_new/
+    umount ${OUT}/rootfs_mnt
+    rm -rf ${OUT}/rootfs_mnt
+    rm -f ${TARGET_OS}/r.img
+
+    # Processing rootfs_new
+    # 注意这里不删除旧的文件，防止删除一些额外安装的模块
+    cp -af ${KMODULES_OUTDIR}/* ${OUT}/rootfs_new/
+
+    # 3rd drives
+    if [ ! -z "$PREBUILT" ]; then
+        if [ -d ${OUT}/rootfs_new/lib/modules/4.14.111 ]; then
+            cp -af ${PREBUILT}/kernel-module/4.14.111/* ${OUT}/rootfs_new/lib/modules/4.14.111/
+        fi
+        mkdir -p ${PREBUILT}/firmware
+        cp -af ${PREBUILT}/firmware/* ${OUT}/rootfs_new/lib/firmware/
+    fi
+
+    # Make rootfs.img
+    ROOTFS_DIR=${OUT}/rootfs_new
+    # calc image size
+    ROOTFS_SIZE=`du -s -B 1 ${ROOTFS_DIR} | cut -f1`
+    # MAX_IMG_SIZE=7100000000
+    MAX_IMG_SIZE=3000000000
+    TMPFILE=`tempfile`
+    ${MKFS} -s -l ${MAX_IMG_SIZE} -a root -L rootfs /dev/null ${ROOTFS_DIR} > ${TMPFILE}
+    IMG_SIZE=`cat ${TMPFILE} | grep "Suggest size:" | cut -f2 -d ':' | awk '{gsub(/^\s+|\s+$/, "");print}'`
+    rm -f ${TMPFILE}
+
+    if [ ${ROOTFS_SIZE} -gt ${IMG_SIZE} ]; then
+            echo "IMG_SIZE less than ROOTFS_SIZE, why?"
+            exit 1
+    fi
+
+    # make fs
+    ${MKFS} -s -l ${IMG_SIZE} -a root -L rootfs ${TARGET_OS}/rootfs.img ${ROOTFS_DIR}
+    if [ $? -ne 0 ]; then
+            echo "error: failed to make rootfs.img."
+            exit 1
+    fi
+
+    if [ ${TARGET_OS} != "eflasher" ]; then
+        echo "IMG_SIZE=${IMG_SIZE}" > ${OUT}/${TARGET_OS}_rootfs-img.info
+        ${TOP}/tools/generate-partmap-txt.sh ${OUT} ${TARGET_OS} ${PREBUILT}
+    fi
+else 
+	echo "not found ${TARGET_OS}/rootfs.img"
+	exit 1
+fi
+

@@ -1,0 +1,11 @@
+# sd0 partition map
+# flash= <device>.<dev no>:<partition>:<fstype>:<start>,<length>
+#   support device : eeprom, nand, mmc
+#   support fstype : 2nd, boot, raw, fat, ext4, ubi
+#
+# CPU=h5
+flash=mmc,0:boot0:raw:0x2000,0x8000:sunxi-spl.bin;
+flash=mmc,0:uboot:raw:0xA000,0x17F6000:u-boot.itb;
+flash=mmc,0:boot:fat:0x1800000,0x6400000:boot.img;
+flash=mmc,0:rootfs:ext4:0x7C00000,<ROOTFS_PARTITION_SIZE>:rootfs.img;
+flash=mmc,0:userdata:ext4:<USERDATA_PARTITION_ADDR>,0x0:userdata.img;
