@@ -18,10 +18,10 @@ true ${MKFS:="${TOP}/tools/make_ext4fs"}
 true ${MKFS:="${TOP}/tools/make_ext4fs"}
 
 true ${SOC:=h5}
-ARCH=arm
+ARCH=arm64
 KCFG=sunxi_arm64_defconfig
 KIMG=arch/${ARCH}/boot/Image
-KDTB=arch/${ARCH}/boot/dts/sun50i-h5-nanopi*.dtb
+KDTB=arch/${ARCH}/boot/dts/allwinner/sun50i-h5-nanopi*.dtb
 KALL="Image dtbs"
 CROSS_COMPILER=aarch64-linux-gnu-
 # ${OUT} ${KERNEL_SRC} ${TOPPATH}/${TARGET_OS} ${TOPPATH}/prebuilt
@@ -90,8 +90,9 @@ if [ -f ${TARGET_OS}/rootfs.img ]; then
         if [ -d ${OUT}/rootfs_new/lib/modules/4.14.111 ]; then
             cp -af ${PREBUILT}/kernel-module/4.14.111/* ${OUT}/rootfs_new/lib/modules/4.14.111/
         fi
-        mkdir -p ${PREBUILT}/firmware
-        cp -af ${PREBUILT}/firmware/* ${OUT}/rootfs_new/lib/firmware/
+	if [ -d ${PREBUILT}/wifi_firmware ]; then
+        	cp -af ${PREBUILT}/wifi_firmware/* ${OUT}/rootfs_new/lib/firmware/
+	fi
     fi
 
     # Make rootfs.img
@@ -119,7 +120,7 @@ if [ -f ${TARGET_OS}/rootfs.img ]; then
 
     if [ ${TARGET_OS} != "eflasher" ]; then
         echo "IMG_SIZE=${IMG_SIZE}" > ${OUT}/${TARGET_OS}_rootfs-img.info
-        ${TOP}/tools/generate-partmap-txt.sh ${OUT} ${TARGET_OS} ${PREBUILT}
+        ${TOP}/tools/generate-partmap-txt.sh ${IMG_SIZE} ${TARGET_OS}
     fi
 else 
 	echo "not found ${TARGET_OS}/rootfs.img"

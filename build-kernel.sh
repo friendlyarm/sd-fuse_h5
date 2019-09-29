@@ -27,7 +27,7 @@ KERNEL_BRANCH=sunxi-4.14.y
 ARCH=arm64
 KCFG=sunxi_arm64_defconfig
 KIMG=arch/${ARCH}/boot/Image
-KDTB=arch/${ARCH}/boot/dts/sun50i-h5-nanopi*.dtb
+KDTB=arch/${ARCH}/boot/dts/allwinner/sun50i-h5-nanopi*.dtb
 KALL="Image dtbs"
 CROSS_COMPILER=aarch64-linux-gnu-
 

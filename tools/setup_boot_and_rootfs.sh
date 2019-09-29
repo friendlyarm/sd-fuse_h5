@@ -9,7 +9,7 @@ set -eu
 true ${SOC:=h5}
 ARCH=arm64
 KIMG=arch/${ARCH}/boot/Image
-KDTB=arch/${ARCH}/boot/dts/sun50i-h5-nanopi*.dtb
+KDTB=arch/${ARCH}/boot/dts/allwinner/sun50i-h5-nanopi*.dtb
 OUT=${PWD}/out
 
 UBOOT_DIR=$1
