@@ -31,9 +31,6 @@ if test $board = nanopi-neo2-v1.1; then
     fdt apply ${fdtovaddr}
 fi
 
-# setup MAC address 
-fdt set ethernet0 local-mac-address ${mac_node}
-
 # setup boot_device
 fdt set mmc${boot_mmc} boot_device <1>
 
