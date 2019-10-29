@@ -19,7 +19,7 @@ true ${MKFS:="${TOP}/tools/make_ext4fs"}
 
 true ${SOC:=h5}
 ARCH=arm64
-KCFG=sunxi_arm64_defconfig
+true ${KCFG:=sunxi_arm64_defconfig}
 KIMG=arch/${ARCH}/boot/Image
 KDTB=arch/${ARCH}/boot/dts/allwinner/sun50i-h5-nanopi*.dtb
 KALL="Image dtbs"

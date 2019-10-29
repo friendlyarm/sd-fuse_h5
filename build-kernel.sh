@@ -25,7 +25,7 @@ KERNEL_REPO=https://github.com/friendlyarm/linux
 KERNEL_BRANCH=sunxi-4.14.y
 
 ARCH=arm64
-KCFG=sunxi_arm64_defconfig
+true ${KCFG:=sunxi_arm64_defconfig}
 KIMG=arch/${ARCH}/boot/Image
 KDTB=arch/${ARCH}/boot/dts/allwinner/sun50i-h5-nanopi*.dtb
 KALL="Image dtbs"
@@ -170,7 +170,7 @@ fi
 
 cd ${TOPPATH}
 download_img ${TARGET_OS}
-./tools/update_kernel_bin_to_img.sh ${OUT} ${KERNEL_SRC} ${TARGET_OS} ${TOPPATH}/prebuilt
+KCFG=${KCFG} ./tools/update_kernel_bin_to_img.sh ${OUT} ${KERNEL_SRC} ${TARGET_OS} ${TOPPATH}/prebuilt
 
 
 if [ $? -eq 0 ]; then
