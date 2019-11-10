@@ -139,8 +139,8 @@ fi
 
 cd ${UBOOT_SRC}
 make clean
-make ${UCFG} ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILER}
-make ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILER} -j$(nproc)
+make ${UCFG} CROSS_COMPILE=${CROSS_COMPILER}
+make CROSS_COMPILE=${CROSS_COMPILER} -j$(nproc)
 
 if [ $? -ne 0 ]; then
 	echo "failed to build uboot."

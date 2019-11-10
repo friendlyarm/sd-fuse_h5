@@ -2,7 +2,7 @@
 set -eu
 
 function has_built_uboot() {
-	if [ -f $1/sunxi-spl.bin ]; then
+	if [ -f $1/spl/sunxi-spl.bin ]; then
 		echo 1
 	else
 		echo 0

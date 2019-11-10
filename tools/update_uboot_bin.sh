@@ -18,6 +18,6 @@ if [ $# -ne 2 ]; then
 	exit 1
 fi
 
-cp -af $1/sunxi-spl.bin $2
+cp -af $1/spl/sunxi-spl.bin $2
 cp -af $1/u-boot.itb $2
 exit $?
