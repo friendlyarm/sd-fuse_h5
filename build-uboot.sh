@@ -114,14 +114,15 @@ if [ ! -d ${UBOOT_SRC} ]; then
 	git clone ${UBOOT_REPO} --depth 1 -b ${UBOOT_BRANCH} ${UBOOT_SRC}
 fi
 
-if [ ! -d /opt/FriendlyARM/toolchain/4.9.3 ]; then
-	echo "please install arm-linux-gcc 4.9.3 first by running these commands: "
-	echo "\tgit clone https://github.com/friendlyarm/prebuilts.git"
-	echo "\tsudo mkdir -p /opt/FriendlyARM/toolchain"
-	echo "\tsudo tar xf prebuilts/gcc-x64/arm-cortexa9-linux-gnueabihf-4.9.3.tar.xz -C /opt/FriendlyARM/toolchain/"
+if [ ! -d /opt/FriendlyARM/toolchain/6.4-aarch64 ]; then
+	echo "please install aarch64-gcc-6.4 first, using these commands: "
+	echo "\tgit clone https://github.com/friendlyarm/prebuilts.git -b master --depth 1"
+	echo "\tcd prebuilts/gcc-x64"
+	echo "\tcat toolchain-6.4-aarch64.tar.gz* | sudo tar xz -C /"
 	exit 1
 fi
-export PATH=/opt/FriendlyARM/toolchain/4.9.3/bin/:$PATH
+
+export PATH=/opt/FriendlyARM/toolchain/6.4-aarch64/bin/:$PATH
 
 if ! [ -x "$(command -v simg2img)" ]; then
     sudo apt install android-tools-fsutils
