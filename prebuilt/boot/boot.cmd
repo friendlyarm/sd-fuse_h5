@@ -37,5 +37,5 @@ setenv fbcon map:0
 setenv overlayfs data=/dev/mmcblk0p3
 #setenv hdmi_res drm_kms_helper.edid_firmware=HDMI-A-1:edid/1280x720.bin video=HDMI-A-1:1280x720@60
 
-setenv bootargs console=ttyS0,115200 earlyprintk root=/dev/mmcblk0p2 rootfstype=ext4 rw rootwait fsck.repair=${fsck.repair} panic=10 ${extra} fbcon=${fbcon} ${hdmi_res} ${overlayfs}
+setenv bootargs console=ttyS0,115200 earlyprintk root=/dev/mmcblk0p2 rootfstype=ext4 rw rootwait cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory swapaccount=1 fsck.repair=${fsck.repair} panic=10 ${extra} fbcon=${fbcon} ${hdmi_res} ${overlayfs}
 booti ${kernel_addr} ${ramdisk_addr}:${ramdisk_size} ${dtb_addr}
