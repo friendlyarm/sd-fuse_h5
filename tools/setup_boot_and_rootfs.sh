@@ -10,6 +10,7 @@ true ${SOC:=h5}
 ARCH=arm64
 KIMG=arch/${ARCH}/boot/Image
 KDTB=arch/${ARCH}/boot/dts/allwinner/sun50i-h5-nanopi*.dtb
+KOVERLAY=arch/${ARCH}/boot/dts/allwinner/overlays
 OUT=${PWD}/out
 
 UBOOT_DIR=$1
@@ -24,6 +25,11 @@ KMODULES_OUTDIR="${OUT}/output_${SOC}_kmodules"
 rsync -a --no-o --no-g ${KERNEL_DIR}/${KIMG} ${BOOT_DIR}
 rsync -a --no-o --no-g ${KERNEL_DIR}/${KDTB} ${BOOT_DIR}
 rsync -a --no-o --no-g ${PREBUILT}/boot/* ${BOOT_DIR}
+
+mkdir -p ${BOOT_DIR}/overlays
+rsync -a --no-o --no-g ${KERNEL_DIR}/${KOVERLAY}/*.dtbo ${BOOT_DIR}/overlays/
+rsync -a --no-o --no-g ${KERNEL_DIR}/${KOVERLAY}/sun50i-h5-fixup* ${BOOT_DIR}/overlays/
+rsync -a --no-o --no-g ${KERNEL_DIR}/${KOVERLAY}/README.sun50i-h5-overlays ${BOOT_DIR}/overlays/README.md
 
 # rootfs
 rm -rf ${ROOTFS_DIR}/lib/modules/*
