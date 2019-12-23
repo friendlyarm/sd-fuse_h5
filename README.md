@@ -44,15 +44,15 @@ sudo ./fusing.sh /dev/sdX friendlycore-xenial_4.14_arm64
 ```
 or build an sd card image:
 ```
-sudo ./mk-sd-image.sh friendlycore-xenial_4.14_arm64 h3-sd-friendlycore.img
+sudo ./mk-sd-image.sh friendlycore-xenial_4.14_arm64 h5-sd-friendlycore.img
 ```
 The following file will be generated:  
 ```
-out/h3-sd-friendlycore.img
+out/h5-sd-friendlycore.img
 ```
 You can use dd to burn this file into an sd card:
 ```
-sudo dd if=out/h3-sd-friendlycore.img bs=1M of=/dev/sdX
+sudo dd if=out/h5-sd-friendlycore.img bs=1M of=/dev/sdX
 ```
 
 ## Build an sdcard-to-emmc image (eflasher rom)
@@ -66,15 +66,15 @@ git clone https://github.com/friendlyarm/sd-fuse_h5.git
 cd sd-fuse_h5
 wget http://112.124.9.243/dvdfiles/H5/images-for-eflasher/eflasher.tgz
 tar xzf eflasher.tgz
-sudo ./mk-emmc-image.sh friendlycore-xenial_4.14_arm64 h3-eflasher-friendlycore.img
+sudo ./mk-emmc-image.sh friendlycore-xenial_4.14_arm64 h5-eflasher-friendlycore.img
 ```
 The following file will be generated:  
 ```
-out/h3-eflasher-friendlycore.img
+out/h5-eflasher-friendlycore.img
 ```
 You can use dd to burn this file into an sd card:
 ```
-sudo dd if=out/h3-eflasher-friendlycore.img bs=1M of=/dev/sdX
+sudo dd if=out/h5-eflasher-friendlycore.img bs=1M of=/dev/sdX
 ```
 
 ## Replace the file you compiled
