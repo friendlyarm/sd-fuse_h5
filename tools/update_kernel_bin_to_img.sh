@@ -22,6 +22,7 @@ ARCH=arm64
 true ${KCFG:=sunxi_arm64_defconfig}
 KIMG=arch/${ARCH}/boot/Image
 KDTB=arch/${ARCH}/boot/dts/allwinner/sun50i-h5-nanopi*.dtb
+KOVERLAY=arch/${ARCH}/boot/dts/allwinner/overlays
 KALL="Image dtbs"
 CROSS_COMPILER=aarch64-linux-gnu-
 # ${OUT} ${KERNEL_SRC} ${TOPPATH}/${TARGET_OS} ${TOPPATH}/prebuilt
@@ -39,11 +40,15 @@ KMODULES_OUTDIR="${OUT}/output_${SOC}_kmodules"
 if [ -f ${TARGET_OS}/boot.img ]; then
     echo "copying kernel to boot.img ..."
     mkdir -p ${OUT}/boot_mnt
+    mkdir -p ${OUT}/boot_mnt/overlays
     mount -o loop ${TARGET_OS}/boot.img ${OUT}/boot_mnt
     RET=$?
 
     rsync -a --no-o --no-g ${KERNEL_BUILD_DIR}/${KIMG} ${OUT}/boot_mnt/
     rsync -a --no-o --no-g ${KERNEL_BUILD_DIR}/${KDTB} ${OUT}/boot_mnt/
+    rsync -a --no-o --no-g ${KERNEL_BUILD_DIR}/${KOVERLAY}/*.dtbo ${OUT}/boot_mnt/overlays
+    rsync -a --no-o --no-g ${KERNEL_BUILD_DIR}/${KOVERLAY}/sun50i-h5-fixup* ${OUT}/boot_mnt/overlays/
+    rsync -a --no-o --no-g ${KERNEL_BUILD_DIR}/${KOVERLAY}/README.sun50i-h5-overlays ${OUT}/boot_mnt/overlays/README.md
 
     # cp ${KERNEL_BUILD_DIR}/${KIMG} ${OUT}/boot_mnt/
     # cp -avf ${KERNEL_BUILD_DIR}/${KDTB} ${OUT}/boot_mnt/
