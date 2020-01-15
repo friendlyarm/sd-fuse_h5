@@ -24,7 +24,7 @@ KIMG=arch/${ARCH}/boot/Image
 KDTB=arch/${ARCH}/boot/dts/allwinner/sun50i-h5-nanopi*.dtb
 KOVERLAY=arch/${ARCH}/boot/dts/allwinner/overlays
 KALL="Image dtbs"
-CROSS_COMPILER=aarch64-linux-gnu-
+CROSS_COMPILE=aarch64-linux-gnu-
 # ${OUT} ${KERNEL_SRC} ${TOPPATH}/${TARGET_OS} ${TOPPATH}/prebuilt
 if [ $# -ne 4 ]; then
         echo "bug: missing arg, $0 needs four args"

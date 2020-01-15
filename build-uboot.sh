@@ -26,7 +26,7 @@ UBOOT_BRANCH=sunxi-v2017.x
 
 ARCH=arm64
 UCFG=nanopi_h5_defconfig
-CROSS_COMPILER=aarch64-linux-gnu-
+CROSS_COMPILE=aarch64-linux-gnu-
 
 TOPPATH=$PWD
 OUT=$TOPPATH/out
@@ -140,8 +140,8 @@ fi
 
 cd ${UBOOT_SRC}
 make clean
-make ${UCFG} CROSS_COMPILE=${CROSS_COMPILER}
-make CROSS_COMPILE=${CROSS_COMPILER} -j$(nproc)
+make ${UCFG} CROSS_COMPILE=${CROSS_COMPILE}
+make CROSS_COMPILE=${CROSS_COMPILE} -j$(nproc)
 
 if [ $? -ne 0 ]; then
 	echo "failed to build uboot."

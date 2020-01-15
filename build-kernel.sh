@@ -29,7 +29,7 @@ true ${KCFG:=sunxi_arm64_defconfig}
 KIMG=arch/${ARCH}/boot/Image
 KDTB=arch/${ARCH}/boot/dts/allwinner/sun50i-h5-nanopi*.dtb
 KALL="Image dtbs"
-CROSS_COMPILER=aarch64-linux-gnu-
+CROSS_COMPILE=aarch64-linux-gnu-
 
 # 
 # kernel logo:
@@ -133,7 +133,7 @@ if [ $? -ne 0 ]; then
 	echo "failed to build kernel."
 	exit 1
 fi
-make ARCH=${ARCH} ${KALL} CROSS_COMPILE=${CROSS_COMPILER} -j$(nproc)
+make ARCH=${ARCH} ${KALL} CROSS_COMPILE=${CROSS_COMPILE} -j$(nproc)
 if [ $? -ne 0 ]; then
         echo "failed to build kernel."
         exit 1
@@ -141,17 +141,17 @@ fi
 
 rm -rf ${KMODULES_OUTDIR}
 mkdir -p ${KMODULES_OUTDIR}
-make ARCH=${ARCH} INSTALL_MOD_PATH=${KMODULES_OUTDIR} modules -j$(nproc) CROSS_COMPILE=${CROSS_COMPILER}
+make ARCH=${ARCH} INSTALL_MOD_PATH=${KMODULES_OUTDIR} modules -j$(nproc) CROSS_COMPILE=${CROSS_COMPILE}
 if [ $? -ne 0 ]; then
 	echo "failed to build kernel modules."
         exit 1
 fi
-make ARCH=${ARCH} INSTALL_MOD_PATH=${KMODULES_OUTDIR} modules_install CROSS_COMPILE=${CROSS_COMPILER}
+make ARCH=${ARCH} INSTALL_MOD_PATH=${KMODULES_OUTDIR} modules_install CROSS_COMPILE=${CROSS_COMPILE}
 if [ $? -ne 0 ]; then
 	echo "failed to build kernel modules."
         exit 1
 fi
-(cd ${KMODULES_OUTDIR} && find . -name \*.ko | xargs ${CROSS_COMPILER}strip --strip-unneeded)
+(cd ${KMODULES_OUTDIR} && find . -name \*.ko | xargs ${CROSS_COMPILE}strip --strip-unneeded)
 
 if [ ! -d ${KMODULES_OUTDIR}/lib ]; then
 	echo "not found kernel modules."
