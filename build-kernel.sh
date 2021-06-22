@@ -50,17 +50,17 @@ KMODULES_OUTDIR="${OUT}/output_${SOC}_kmodules"
 true ${KERNEL_SRC:=${OUT}/kernel-${SOC}}
 
 function usage() {
-       echo "Usage: $0 <friendlycore-xenial_4.14_arm64|friendlywrt_4.14_arm64|eflasher>"
+       echo "Usage: $0 <friendlycore-focal_4.14_arm64|friendlycore-xenial_4.14_arm64|friendlywrt_4.14_arm64|eflasher>"
        echo "# example:"
        echo "# clone kernel source from github:"
        echo "    git clone ${KERNEL_REPO} --depth 1 -b ${KERNEL_BRANCH} ${KERNEL_SRC}"
        echo "# or clone your local repo:"
        echo "    git clone git@192.168.1.2:/path/to/linux.git --depth 1 -b ${KERNEL_BRANCH} ${KERNEL_SRC}"
        echo "# then"
-       echo "    ./build-kernel.sh friendlycore-xenial_4.14_arm64"
-       echo "    ./mk-emmc-image.sh friendlycore-xenial_4.14_arm64"
+       echo "    ./build-kernel.sh friendlycore-focal_4.14_arm64"
+       echo "    ./mk-emmc-image.sh friendlycore-focal_4.14_arm64"
        echo "# also can do:"
-       echo "    KERNEL_SRC=~/mykernel ./build-kernel.sh friendlycore-xenial_4.14_arm64"
+       echo "    KERNEL_SRC=~/mykernel ./build-kernel.sh friendlycore-focal_4.14_arm64"
        exit 0
 }
 
@@ -74,7 +74,7 @@ true ${TARGET_OS:=${1,,}}
 PARTMAP=./${TARGET_OS}/partmap.txt
 
 case ${TARGET_OS} in
-friendlycore-xenial_4.14_arm64 | friendlywrt_4.14_arm64 | eflasher)
+friendlycore-focal_4.14_arm64 | friendlycore-xenial_4.14_arm64 | friendlywrt_4.14_arm64 | eflasher)
         ;;
 *)
         echo "Error: Unsupported target OS: ${TARGET_OS}"
