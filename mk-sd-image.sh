@@ -45,7 +45,7 @@ esac
 # Automatically re-run script under sudo if not root
 if [ $(id -u) -ne 0 ]; then
 	echo "Re-running script under sudo..."
-	sudo "$0" "$@"
+	sudo --preserve-env "$0" "$@"
 	exit
 fi
 
@@ -54,8 +54,8 @@ fi
 # ----------------------------------------------------------
 # Create zero file
 
-if [ $# -eq 2 ]; then
-	RAW_FILE=$2
+true ${RAW_SIZE_MB:=0}
+if [ $RAW_SIZE_MB -eq 0 ]; then
 	case ${TARGET_OS} in
 	friendlycore-xenial_4.14_arm64)
 		RAW_SIZE_MB=7800 ;;
@@ -68,23 +68,27 @@ if [ $# -eq 2 ]; then
 	*)
 		RAW_SIZE_MB=7800 ;;
 	esac
+fi
+
+if [ $# -eq 2 ]; then
+	RAW_FILE=$2
 else
 	case ${TARGET_OS} in
 	friendlycore-xenial_4.14_arm64)
 		RAW_FILE=${SOC}_sd_friendlycore-xenial_4.14_arm64-$(date +%Y%m%d).img
-		RAW_SIZE_MB=7800 ;;
+		;;
 	friendlycore-focal_4.14_arm64)
 		RAW_FILE=${SOC}_sd_friendlycore-focal_4.14_arm64-$(date +%Y%m%d).img
-		RAW_SIZE_MB=7800 ;;
+		;;
 	friendlywrt_4.14_arm64)
 		RAW_FILE=${SOC}_sd_friendlywrt_4.14_arm64-$(date +%Y%m%d).img
-		RAW_SIZE_MB=1000 ;;
+		;;
 	eflasher)
 		RAW_FILE=${SOC}_eflasher-$(date +%Y%m%d).img
-		RAW_SIZE_MB=7800 ;;
+		;;
 	*)
 		RAW_FILE=${SOC}_sd_${TARGET_OS}-$(date +%Y%m%d).img
-		RAW_SIZE_MB=7800 ;;
+		;;
 	esac
 fi
 
