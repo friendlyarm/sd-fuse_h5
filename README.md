@@ -56,7 +56,7 @@ If the files are not prepared in advance, the script will automatically download
 *Note: Here we use friendlycore-focal system as an example*  
 Clone this repository locally, then download and uncompress the [pre-built images](http://112.124.9.243/dvdfiles/h5/images-for-eflasher), due to the bandwidth of the http server, we recommend downloading the file from the [NetDrive](https://download.friendlyelec.com/h5):
 ```
-git clone https://github.com/friendlyarm/sd-fuse_h5 -b master sd-fuse_h5
+git clone https://github.com/friendlyarm/sd-fuse_h5 -b master --single-branch sd-fuse_h5
 cd sd-fuse_h5
 wget http://112.124.9.243/dvdfiles/h5/images-for-eflasher/friendlycore-focal_4.14_arm64.tgz
 tar xvzf friendlycore-focal_4.14_arm64.tgz
@@ -79,7 +79,7 @@ out/h5_sd_friendlycore-focal_4.14_arm64-YYYYMMDD.img
 *Note: Here we use friendlycore-focal system as an example*  
 Clone this repository locally, then download and uncompress the [pre-built images](http://112.124.9.243/dvdfiles/h5/images-for-eflasher), here you need to download the friendlycore-focal and eflasher [pre-built images](http://112.124.9.243/dvdfiles/h5/images-for-eflasher):
 ```
-git clone https://github.com/friendlyarm/sd-fuse_h5 -b master sd-fuse_h5
+git clone https://github.com/friendlyarm/sd-fuse_h5 -b master --single-branch sd-fuse_h5
 cd sd-fuse_h5
 wget http://112.124.9.243/dvdfiles/h5/images-for-eflasher/friendlycore-focal_4.14_arm64.tgz
 tar xvzf friendlycore-focal_4.14_arm64.tgz
@@ -94,17 +94,28 @@ The following flashable image file will be generated, ready to be used to boot t
 ```
 out/h5_eflasher_friendlycore-focal_4.14_arm64-YYYYMMDD.img
 ```
-
-### Build your own root filesystem image
+### Backup rootfs and create custom SD image (to burn your application into other boards)
+#### Backup rootfs
+Run the following commands on your target board. These commands will back up the entire root partition:
+```
+sudo passwd root
+su root
+cd /
+tar --warning=no-file-changed -cvpzf /rootfs.tar.gz \
+    --exclude=/rootfs.tar.gz --exclude=/var/lib/docker/runtimes \
+    --exclude=/etc/firstuser --exclude=/etc/friendlyelec-release \
+    --exclude=/usr/local/first_boot_flag --one-file-system /
+```
+#### Making a bootable SD card from a root filesystem
 *Note: Here we use friendlycore-focal system as an example*  
 Clone this repository locally, then download and uncompress the [pre-built images](http://112.124.9.243/dvdfiles/h5/images-for-eflasher):
 ```
-git clone https://github.com/friendlyarm/sd-fuse_h5 -b master sd-fuse_h5
+git clone https://github.com/friendlyarm/sd-fuse_h5 -b master --single-branch sd-fuse_h5
 cd sd-fuse_h5
 wget http://112.124.9.243/dvdfiles/h5/images-for-eflasher/friendlycore-focal_4.14_arm64.tgz
 tar xvzf friendlycore-focal_4.14_arm64.tgz
 ```
-Download the compressed root file system tar ball and unzip it, the unzip command requires root privileges, so you need put sudo in front of the command:
+Unzip the rootfs.tar.gz exported in the previous section, or download the filesystem archive from the following URL and unzip it, the unzip command requires root privileges, so you need put sudo in front of the command:
 ```
 wget http://112.124.9.243/dvdfiles/h5/rootfs/rootfs_friendlycore-focal_4.14.tgz
 sudo tar xzf rootfs_friendlycore-focal_4.14.tgz
@@ -125,16 +136,12 @@ Or build SD-to-eMMC image:
 ```
 ./mk-emmc-image.sh friendlycore-focal_4.14_arm64
 ```
-#### Tips
-
-* Using the debootstrap tool, you can customize the file system, pre-install packages, etc.
-
 
 ### Compiling the Kernel
 *Note: Here we use friendlycore-focal system as an example*  
 Clone this repository locally, then download and uncompress the [pre-built images](http://112.124.9.243/dvdfiles/h5/images-for-eflasher):
 ```
-git clone https://github.com/friendlyarm/sd-fuse_h5 -b master sd-fuse_h5
+git clone https://github.com/friendlyarm/sd-fuse_h5 -b master --single-branch sd-fuse_h5
 cd sd-fuse_h5
 wget http://112.124.9.243/dvdfiles/h5/images-for-eflasher/friendlycore-focal_4.14_arm64.tgz
 tar xvzf friendlycore-focal_4.14_arm64.tgz
@@ -166,7 +173,7 @@ export KCFG=my_defconfig
 *Note: Here we use friendlycore-focal system as an example* 
 Clone this repository locally, then download and uncompress the [pre-built images](http://112.124.9.243/dvdfiles/h5/images-for-eflasher)::
 ```
-git clone https://github.com/friendlyarm/sd-fuse_h5 -b master sd-fuse_h5
+git clone https://github.com/friendlyarm/sd-fuse_h5 -b master --single-branch sd-fuse_h5
 cd sd-fuse_h5
 wget http://112.124.9.243/dvdfiles/h5/images-for-eflasher/friendlycore-focal_4.14_arm64.tgz
 tar xvzf friendlycore-focal_4.14_arm64.tgz
