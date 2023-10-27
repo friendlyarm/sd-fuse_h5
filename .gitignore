@@ -6,6 +6,7 @@
 # Normal rules
 #
 .*.swp
+/rootfs
 rootfs_*.tgz
 /test/out
 /test/tmp
