@@ -116,10 +116,15 @@ cd sd-fuse_h5
 wget http://112.124.9.243/dvdfiles/h5/images-for-eflasher/friendlycore-focal_4.14_arm64.tgz
 tar xvzf friendlycore-focal_4.14_arm64.tgz
 ```
-解压上一章节导出的rootfs.tar.gz，或者从以下网址下载文件系统压缩包并解压, 需要使用root权限, 因此解压命令需要加上sudo:
+解压上一章节中从开发板上导出的rootfs.tar.gz, 需要使用root权限, 因此解压命令需要加上sudo:
+```
+mkdir friendlycore-focal_4.14_arm64/rootfs
+sudo tar xvzfp rootfs.tar.gz -C friendlycore-focal_4.14_arm64/rootfs --numeric-owner --same-owner
+```
+或者从以下网址下载文件系统压缩包并解压:
 ```
 wget http://112.124.9.243/dvdfiles/h5/rootfs/rootfs_friendlycore-focal_4.14.tgz
-sudo tar xzf rootfs_friendlycore-focal_4.14.tgz
+sudo tar xvzfp rootfs_friendlycore-focal_4.14.tgz --numeric-owner --same-owner
 ```
 可以根据需要, 对文件系统目录进行更改, 例如:
 ```

@@ -116,10 +116,15 @@ cd sd-fuse_h5
 wget http://112.124.9.243/dvdfiles/h5/images-for-eflasher/friendlycore-focal_4.14_arm64.tgz
 tar xvzf friendlycore-focal_4.14_arm64.tgz
 ```
-Unzip the rootfs.tar.gz exported in the previous section, or download the filesystem archive from the following URL and unzip it, the unzip command requires root privileges, so you need put sudo in front of the command:
+Extract the rootfs.tar.gz exported in the previous section, the tar command requires root privileges, so you need put sudo in front of the command:
+```
+mkdir friendlycore-focal_4.14_arm64/rootfs
+sudo tar xvzfp rootfs.tar.gz -C friendlycore-focal_4.14_arm64/rootfs --numeric-owner --same-owner
+```
+or download the filesystem archive from the following URL and extract it:
 ```
 wget http://112.124.9.243/dvdfiles/h5/rootfs/rootfs_friendlycore-focal_4.14.tgz
-sudo tar xzf rootfs_friendlycore-focal_4.14.tgz
+sudo tar xvzfp rootfs_friendlycore-focal_4.14.tgz --numeric-owner --same-owner
 ```
 Change something:
 ```
