@@ -27,11 +27,21 @@ if [ $# -eq 0 ]; then
 	usage
 fi
 
+# Automatically re-run script under sudo if not root
+if [ $(id -u) -ne 0 ]; then
+	echo "Re-running script under sudo..."
+	sudo --preserve-env "$0" "$@"
+	exit
+fi
+
+. tools/util.sh
+check_and_install_package
+
 # ----------------------------------------------------------
 # Get platform, target OS
 
 true ${SOC:=h5}
-true ${TARGET_OS:=${1,,}}
+true ${TARGET_OS:=$(echo ${1,,}|sed 's/\///g')}
 
 case ${TARGET_OS} in
 friendlycore-focal_4.14_arm64 | friendlycore-xenial_4.14_arm64 | friendlywrt_4.14_arm64 | eflasher)
@@ -40,16 +50,6 @@ friendlycore-focal_4.14_arm64 | friendlycore-xenial_4.14_arm64 | friendlywrt_4.1
         echo "Error: Unsupported target OS: ${TARGET_OS}"
         exit 0
 esac
-
-
-# Automatically re-run script under sudo if not root
-if [ $(id -u) -ne 0 ]; then
-	echo "Re-running script under sudo..."
-	sudo --preserve-env "$0" "$@"
-	exit
-fi
-
-
 
 # ----------------------------------------------------------
 # Create zero file
@@ -75,19 +75,19 @@ if [ $# -eq 2 ]; then
 else
 	case ${TARGET_OS} in
 	friendlycore-xenial_4.14_arm64)
-		RAW_FILE=${SOC}_sd_friendlycore-xenial_4.14_arm64-$(date +%Y%m%d).img
+		RAW_FILE=${SOC}-sd-friendlycore-xenial_4.14_arm64-$(date +%Y%m%d).img
 		;;
 	friendlycore-focal_4.14_arm64)
-		RAW_FILE=${SOC}_sd_friendlycore-focal_4.14_arm64-$(date +%Y%m%d).img
+		RAW_FILE=${SOC}-sd-friendlycore-focal_4.14_arm64-$(date +%Y%m%d).img
 		;;
 	friendlywrt_4.14_arm64)
-		RAW_FILE=${SOC}_sd_friendlywrt_4.14_arm64-$(date +%Y%m%d).img
+		RAW_FILE=${SOC}-sd-friendlywrt_4.14_arm64-$(date +%Y%m%d).img
 		;;
 	eflasher)
-		RAW_FILE=${SOC}_eflasher-$(date +%Y%m%d).img
+		RAW_FILE=${SOC}-eflasher-$(date +%Y%m%d).img
 		;;
 	*)
-		RAW_FILE=${SOC}_sd_${TARGET_OS}-$(date +%Y%m%d).img
+		RAW_FILE=${SOC}-sd-${TARGET_OS}-$(date +%Y%m%d).img
 		;;
 	esac
 fi
@@ -98,18 +98,15 @@ if [ ! -d $OUT ]; then
 	exit 1
 fi
 RAW_FILE=${OUT}/${RAW_FILE}
+if [ -f "${RAW_FILE}" ]; then
+	rm -f ${RAW_FILE}
+fi
 
 BLOCK_SIZE=1024
 let RAW_SIZE=(${RAW_SIZE_MB}*1000*1000)/${BLOCK_SIZE}
 
 echo "Creating RAW image: ${RAW_FILE} (${RAW_SIZE_MB} MB)"
 echo "---------------------------------"
-
-
-if [ -f "${RAW_FILE}" ]; then
-	rm -f ${RAW_FILE}
-fi
-
 dd if=/dev/zero of=${RAW_FILE} bs=${BLOCK_SIZE} count=0 \
 	seek=${RAW_SIZE} || exit 1
 
@@ -126,8 +123,15 @@ fi
 # Setup loop device
 
 LOOP_DEVICE=$(losetup -f)
-
 echo "Using device: ${LOOP_DEVICE}"
+for i in `seq 3`; do
+    if [ -b ${LOOP_DEVICE} ]; then
+        break
+    else
+        echo "Waitting ${LOOP_DEVICE}"
+        sleep 1
+    fi
+done
 
 if losetup ${LOOP_DEVICE} ${RAW_FILE}; then
 	USE_KPARTX=1
@@ -148,7 +152,7 @@ ${SD_FUSING} ${LOOP_DEVICE} ${TARGET_OS}
 RET=$?
 
 if [ "x${TARGET_OS}" = "xeflasher" ]; then
-	mkfs.exfat ${LOOP_DEVICE}p1 -n FriendlyARM
+	sudo mkfs.exfat ${LOOP_DEVICE}p1 -n FriendlyARM
 fi
 
 # cleanup
@@ -164,4 +168,3 @@ echo "---------------------------------"
 echo "RAW image successfully created (`date +%T`)."
 ls -l ${RAW_FILE}
 echo "Tip: You can compress it to save disk space."
-

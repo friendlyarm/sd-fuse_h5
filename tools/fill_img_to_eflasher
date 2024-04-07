@@ -1,5 +1,4 @@
 #!/bin/bash
-
 set -eu
 
 # ----------------------------------------------------------
@@ -9,7 +8,7 @@ TOPPATH=$PWD
 
 EFLASHER_RAW_IMG=$1
 SOC=$2
-TARGET_OS=$3
+TARGET_OS=$(echo ${3,,}|sed 's/\///g')
 
 OS_IMAGES_DIR=${TOPPATH}/${TARGET_OS}
 
@@ -35,15 +34,15 @@ OS_IMAGES_DIR=${TOPPATH}/${TARGET_OS}
 
 case ${TARGET_OS} in
 friendlycore-xenial_4.14_arm64)
-	RAW_FILE=${SOC}_eflasher_friendlycore-xenial_4.14_arm64-$(date +%Y%m%d).img ;;
+	RAW_FILE=${SOC}-eflasher-friendlycore-xenial_4.14_arm64-$(date +%Y%m%d).img ;;
 friendlycore-focal_4.14_arm64)
-	RAW_FILE=${SOC}_eflasher_friendlycore-focal_4.14_arm64-$(date +%Y%m%d).img ;;
+	RAW_FILE=${SOC}-eflasher-friendlycore-focal_4.14_arm64-$(date +%Y%m%d).img ;;
 friendlywrt_4.14_arm64)
-	RAW_FILE=${SOC}_eflasher_friendlywrt_4.14_arm64-$(date +%Y%m%d).img ;; 
+	RAW_FILE=${SOC}-eflasher-friendlywrt_4.14_arm64-$(date +%Y%m%d).img ;;
 eflasher)
-	RAW_FILE=${SOC}_eflasher_eflasher-$(date +%Y%m%d).img ;;
+	RAW_FILE=${SOC}-eflasher-$(date +%Y%m%d).img ;;
 *)
-	RAW_FILE=${SOC}_eflasher_${TARGET_OS}-$(date +%Y%m%d).img ;;
+	RAW_FILE=${SOC}-eflasher-${TARGET_OS}-$(date +%Y%m%d).img ;;
 esac
 	
 AUTOSTART=no
@@ -96,6 +95,17 @@ autoRestore=
 ; If the "autoExit" set to true, the eflasher-gui will automatically exit after burning or restoring is completed,
 ; You can do something else after burning or restoring by modifying /opt/run-eflasher.sh.
 autoExit=false
+
+[UI]
+; HDMI overscan option, examples:
+;     screenSizePercent=auto
+;     screenSizePercent=90
+screenSizePercent=auto
+
+welcomeMessage=
+hideMenuButton=false
+hideBackupAndRestoreButton=false
+hideStatusBar=false
 EOL
 }
 
@@ -104,6 +114,14 @@ FULLIMG=out/${RAW_FILE}
 # ----------------------------------------------------------
 cp ${EFLASHER_RAW_IMG} ${FULLIMG}
 DEV=`losetup -f`
+for i in `seq 3`; do
+    if [ -b ${DEV} ]; then
+        break
+    else
+        echo "Waitting ${DEV}"
+        sleep 1
+    fi
+done
 MNT=/tmp/media_exfat
 rm -rf ${MNT}
 if [ $? -eq 0 ]; then
@@ -114,7 +132,9 @@ else
 fi
 # ----------------------------------------------------------
 losetup ${DEV} ${FULLIMG}
+sleep 1
 partprobe ${DEV}
+sleep 1
 mkdir -p ${MNT}
 mount -t exfat ${DEV}p1 ${MNT}
 gen_eflasher_conf ${MNT} ${TARGET_OS} ${AUTOSTART}
