@@ -21,6 +21,7 @@ rootfs_*.tgz
 # Top-level generic files
 #
 
+/kernel
 /mnt
 /vendor
 /android

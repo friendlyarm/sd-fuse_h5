@@ -20,6 +20,8 @@ set -eu
 
 true ${SOC:=h5}
 true ${DISABLE_MKIMG:=0}
+true ${SKIP_DISTCLEAN:=0}
+
 KERNEL_REPO=https://github.com/friendlyarm/linux
 KERNEL_BRANCH=sunxi-4.14.y
 
@@ -56,14 +58,14 @@ if [ ! -d $OUT ]; then
 	exit 1
 fi
 KMODULES_OUTDIR="${OUT}/output_${SOC}_kmodules"
-true ${kernel_src:=${OUT}/kernel-${SOC}}
-true ${KERNEL_SRC:=${kernel_src}}
+true ${kernel_src:=out/kernel-${SOC}}
+true ${KERNEL_SRC:=$(readlink -f ${kernel_src})}
 
 function usage() {
        echo "Usage: $0 <friendlycore-focal_4.14_arm64|friendlycore-xenial_4.14_arm64|friendlywrt_4.14_arm64|eflasher>"
        echo "# example:"
        echo "# clone kernel source from github:"
-       echo "    git clone ${KERNEL_REPO} --depth 1 -b ${KERNEL_BRANCH} ${KERNEL_SRC}"
+       echo "    git clone ${KERNEL_REPO} --depth 1 -b ${KERNEL_BRANCH} ${kernel_src}"
        echo "# or clone your local repo:"
        echo "    git clone git@192.168.1.2:/path/to/linux.git --depth 1 -b ${KERNEL_BRANCH} ${KERNEL_SRC}"
        echo "# then"
@@ -132,8 +134,11 @@ if [ ! -d ${KERNEL_SRC} ]; then
 	git clone ${KERNEL_REPO} --depth 1 -b ${KERNEL_BRANCH} ${KERNEL_SRC}
 fi
 
+echo "kernel src: ${KERNEL_SRC}"
 cd ${KERNEL_SRC}
-make distclean
+if [ ${SKIP_DISTCLEAN} -ne 1 ]; then
+	make CROSS_COMPILE=${CROSS_COMPILE} ARCH=${ARCH} distclean
+fi
 touch .scmversion
 make CROSS_COMPILE=${CROSS_COMPILE} ARCH=${ARCH} ${KCFG}
 if [ $? -ne 0 ]; then
