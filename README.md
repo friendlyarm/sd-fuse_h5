@@ -10,9 +10,9 @@ This repository is a bunch of scripts to build bootable SD card images for Frien
 *Read this in other languages: [简体中文](README_cn.md)*  
   
 ## Requirements
-* Supports x86_64 and aarch64 platforms
-* Recommended Host OS: Ubuntu 20.04 LTS (Focal Fossa) 64-bit or Higher. Note: Build will fail on Ubuntu Bionic since package lz4 is required
-* For x86_64 user, it is recommended to run this script to initialize the development environment: https://github.com/friendlyarm/build-env-on-ubuntu-bionic
+* Supports x86_64 and arm64 platforms (Note: requires A53 or higher on arm64)
+* Recommended Host OS: Ubuntu 20.04 LTS (Focal Fossa) 64-bit or Higher (Note: Build will fail on Ubuntu Bionic since package lz4 is required)
+* The script will prompt for the installation of necessary packages.
 * Docker container: https://github.com/friendlyarm/docker-cross-compiler-novnc
 
 ## Kernel Version Support
@@ -75,7 +75,6 @@ The following flashable image file will be generated, it is now ready to be used
 ```
 out/h5_sd_friendlycore-focal_4.14_arm64-YYYYMMDD.img
 ```
-
 
 ### Build your own SD-to-eMMC Image
 *Note: Here we use friendlycore-focal system as an example*  
@@ -144,6 +143,7 @@ If the image path is too big to pack, you can use the RAW_SIZE_MB environment va
 RAW_SIZE_MB=16000 ./mk-sd-image.sh friendlycore-focal_4.14_arm64
 RAW_SIZE_MB=16000 ./mk-emmc-image.sh friendlycore-focal_4.14_arm64
 ```
+
 ### Compiling the Kernel
 *Note: Here we use friendlycore-focal system as an example*  
 Clone this repository locally, then download and uncompress the [pre-built images](http://112.124.9.243/dvdfiles/h5/images-for-eflasher):
@@ -175,7 +175,7 @@ KERNEL_SRC=kernel KCFG=my_defconfig ./build-kernel.sh friendlycore-focal_4.14_ar
 
 ### Compiling the u-boot
 *Note: Here we use friendlycore-focal system as an example* 
-Clone this repository locally, then download and uncompress the [pre-built images](http://112.124.9.243/dvdfiles/h5/images-for-eflasher)::
+Clone this repository locally, then download and uncompress the [pre-built images](http://112.124.9.243/dvdfiles/h5/images-for-eflasher):
 ```
 git clone https://github.com/friendlyarm/sd-fuse_h5 -b master --single-branch sd-fuse_h5
 cd sd-fuse_h5
@@ -187,4 +187,6 @@ Download the u-boot source code from github that matches the OS version, the env
 git clone https://github.com/friendlyarm/u-boot -b sunxi-v2017.x --depth 1 uboot
 UBOOT_SRC=uboot ./build-uboot.sh friendlycore-focal_4.14_arm64
 ```
-
+### Common Issues and Solutions
+* Unable to boot after creating rootfs (Solution: The file permissions in the file system might be corrupted. Make sure to use the tools/extract-rootfs-tar.sh script to extract rootfs, and use the -cpzf options with the tar command for packaging.)
+* Process exits during creation (Solution: Ensure the machine has sufficient memory.)

@@ -62,7 +62,7 @@ true ${kernel_src:=out/kernel-${SOC}}
 true ${KERNEL_SRC:=$(readlink -f ${kernel_src})}
 
 function usage() {
-       echo "Usage: $0 <friendlycore-focal_4.14_arm64|friendlycore-xenial_4.14_arm64|friendlywrt_4.14_arm64|eflasher>"
+       echo "Usage: $0 <img dir>"
        echo "# example:"
        echo "# clone kernel source from github:"
        echo "    git clone ${KERNEL_REPO} --depth 1 -b ${KERNEL_BRANCH} ${kernel_src}"

@@ -19,7 +19,7 @@ set -eu
 # http://www.gnu.org/licenses/gpl-2.0.html.
 
 function usage() {
-       echo "Usage: $0 <friendlycore-focal_4.14_arm64|friendlycore-xenial_4.14_arm64|friendlywrt_4.14_arm64|eflasher>"
+       echo "Usage: $0 <img dir>"
        exit 0
 }
 
