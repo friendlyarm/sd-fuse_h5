@@ -161,7 +161,9 @@ Customize the kernel configuration:
 ```
 cd kernel
 touch .scmversion
+
 make ARCH=arm64 sunxi_arm64_defconfig
+
 make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- menuconfig
 make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- savedefconfig
 cp defconfig ./arch/arm64/configs/my_defconfig                  # Save the configuration as my_defconfig

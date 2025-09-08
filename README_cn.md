@@ -161,7 +161,9 @@ git clone https://github.com/friendlyarm/linux -b sunxi-4.14.y --depth 1 kernel
 ```
 cd kernel
 touch .scmversion
+
 make ARCH=arm64 sunxi_arm64_defconfig
+
 make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- menuconfig     # 根据需要改动配置
 make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- savedefconfig
 cp defconfig ./arch/arm64/configs/my_defconfig                  # 保存配置 my_defconfig
