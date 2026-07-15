@@ -56,3 +56,4 @@ rootfs_*.tgz
 # cscope files
 cscope.*
 
+.use-local-r2
